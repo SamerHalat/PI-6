@@ -5,23 +5,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import portaria.project.domain.Veiculo
-import portaria.project.ui.VeiculoViewModel
+
+data class VeiculoVisual(val placa: String, val modelo: String, val cor: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VeiculoScreen(navController: NavController, viewModel: VeiculoViewModel) {
+fun VeiculoScreen(navController: NavController) {
     var placa by remember { mutableStateOf("") }
     var modelo by remember { mutableStateOf("") }
     var cor by remember { mutableStateOf("") }
-    val veiculos by viewModel.veiculos.collectAsState()
+
+    val veiculos = remember { mutableStateListOf<VeiculoVisual>() }
 
     Scaffold(
         topBar = {
@@ -38,29 +38,31 @@ fun VeiculoScreen(navController: NavController, viewModel: VeiculoViewModel) {
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Adicionar Veículo", style = MaterialTheme.typography.titleMedium)
                     OutlinedTextField(value = placa, onValueChange = { placa = it }, label = { Text("Placa") }, modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(value = modelo, onValueChange = { modelo = it }, label = { Text("Modelo/Marca") }, modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(value = cor, onValueChange = { cor = it }, label = { Text("Cor") }, modifier = Modifier.fillMaxWidth())
+
                     Button(onClick = {
-                        viewModel.inserir(Veiculo(placa = placa, modelo = modelo, cor = cor))
-                        placa = ""; modelo = ""; cor = ""
-                    }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        Icon(Icons.Default.DirectionsCar, null); Text(" Registar Veículo")
+                        if(placa.isNotBlank()) {
+                            veiculos.add(VeiculoVisual(placa, modelo, cor))
+                            placa = ""; modelo = ""; cor = ""
+                        }
+                    }, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                        Icon(Icons.Default.DirectionsCar, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Registar Veículo (Front-end)")
                     }
                 }
             }
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
             LazyColumn {
                 items(veiculos) { v ->
                     ListItem(
                         headlineContent = { Text(v.placa) },
-                        supportingContent = { Text("${v.modelo} - ${v.cor}") },
-                        trailingContent = {
-                            IconButton(onClick = { v.id?.let { viewModel.apagar(it.toInt()) } }) {
-                                Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.error)
-                            }
-                        }
+                        supportingContent = { Text("${v.modelo} - ${v.cor}") }
                     )
+                    HorizontalDivider()
                 }
             }
         }
