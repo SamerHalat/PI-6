@@ -3,37 +3,13 @@ package portaria.project.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Morador(
-    val id: Int,
-    val nome: String,
-    val email: String,
-    val dataNascimento: String,
-    val isAtivo: Boolean
-)
+data class Morador(val id: String? = null, val nome: String, val apto: String, val bloco: String)
 
 @Serializable
-data class Visitante(
-    val id: Int,
-    val nome: String,
-    val rg: String,
-    val dataVisita: String,
-    val isLiberado: Boolean
-)
+data class Visitante(val id: String? = null, val nome: String, val rg: String, val destino: String)
 
 @Serializable
-data class Veiculo(
-    val id: Int,
-    val placa: String,
-    val modelo: String,
-    val cor: String,
-    val isMorador: Boolean
-)
+data class Veiculo(val id: String? = null, val placa: String, val modelo: String, val cor: String)
 
 @Serializable
-data class Encomenda(
-    val id: Int,
-    val descricao: String,
-    val destinatario: String,
-    val dataRecebimento: String,
-    val isEntregue: Boolean
-)
+data class Encomenda(val id: String? = null, val descricao: String, val destinatario: String, val status: String)
