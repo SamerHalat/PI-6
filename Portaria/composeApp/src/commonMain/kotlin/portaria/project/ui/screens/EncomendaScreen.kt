@@ -1,67 +1,105 @@
 package portaria.project.ui.screens
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-data class EncomendaVisual(val descricao: String, val destinatario: String)
+data class EncomendaData(val id: String, val descricao: String, val destinatario: String, val local: String, val status: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EncomendaScreen(navController: NavController) {
-    var desc by remember { mutableStateOf("") }
-    var dest by remember { mutableStateOf("") }
+fun EncomendaListScreen(navController: NavController) {
+    var busca by remember { mutableStateOf("") }
 
-    val encomendas = remember { mutableStateListOf<EncomendaVisual>() }
+    val lista = listOf(
+        EncomendaData("1", "CAIXA AMAZON", "SAMER", "PRATELEIRA A", "AGUARDANDO RETIRADA"),
+        EncomendaData("2", "CARTA REGISTRADA", "MARIA (202)", "GAVETA 2", "ENTREGUE")
+    )
+
+    // Filtro dinâmico
+    val filtrada = lista.filter {
+        it.descricao.contains(busca, ignoreCase = true) ||
+                it.destinatario.contains(busca, ignoreCase = true)
+    }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Entrada de Encomendas") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
-                    }
-                }
-            )
-        }
+        topBar = { CenterAlignedTopAppBar(title = { Text("ENCOMENDAS", fontSize = 14.sp, fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = { navController.navigate("home") }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) } }) },
+        floatingActionButton = { FloatingActionButton(onClick = { navController.navigate("encomendas_form") }, shape = RectangleShape) { Icon(Icons.Default.Add, null) } }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Registar Entrega", style = MaterialTheme.typography.titleMedium)
-                    OutlinedTextField(value = desc, onValueChange = { desc = it }, label = { Text("Descrição (ex: Caixa Amazon)") }, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(value = dest, onValueChange = { dest = it }, label = { Text("Destinatário") }, modifier = Modifier.fillMaxWidth())
+        Column(modifier = Modifier.padding(padding).fillMaxSize().padding(24.dp)) {
 
-                    Button(onClick = {
-                        if(desc.isNotBlank()) {
-                            encomendas.add(EncomendaVisual(desc, dest))
-                            desc = ""; dest = ""
+            OutlinedTextField(
+                value = busca,
+                onValueChange = { busca = it },
+                placeholder = { Text("Pesquisar encomenda ou destinatário...") },
+                leadingIcon = { Icon(Icons.Default.Search, null) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RectangleShape
+            )
+            Spacer(Modifier.height(24.dp))
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(filtrada) { item ->
+                    Box(modifier = Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outline).padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(item.descricao, fontWeight = FontWeight.Black, fontSize = 16.sp)
+                                Text("ID: ${item.id} | DESTINATÁRIO: ${item.destinatario} | LOCAL: ${item.local}", fontSize = 12.sp, color = MaterialTheme.colorScheme.outline)
+                                Text("STATUS: ${item.status}", fontSize = 12.sp, color = if(item.status == "ENTREGUE") Color.Green else Color.Yellow)
+                            }
+                            IconButton(onClick = { navController.navigate("encomendas_form") }) { Icon(Icons.Default.EditNote, null) }
+                            IconButton(onClick = { }) { Icon(Icons.Default.DeleteOutline, null, tint = Color.Red) }
                         }
-                    }, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-                        Icon(Icons.Default.LocalShipping, null)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Registar Entrega (Front-end)")
                     }
                 }
             }
-            Spacer(Modifier.height(24.dp))
-            LazyColumn {
-                items(encomendas) { e ->
-                    ListItem(
-                        headlineContent = { Text(e.destinatario) },
-                        supportingContent = { Text("${e.descricao} | Status: Pendente") }
-                    )
-                    HorizontalDivider()
-                }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EncomendaFormScreen(navController: NavController) {
+    var descricao by remember { mutableStateOf("") }
+    var destinatario by remember { mutableStateOf("") }
+    var local by remember { mutableStateOf("") }
+    var entregue by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = { CenterAlignedTopAppBar(title = { Text("REGISTRO DE ENCOMENDA", fontSize = 14.sp, fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) } }) }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding).fillMaxSize().padding(24.dp)) {
+            OutlinedTextField(value = descricao, onValueChange = { descricao = it }, label = { Text("DESCRIÇÃO DA ENCOMENDA") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(12.dp))
+            Row {
+                OutlinedTextField(value = destinatario, onValueChange = { destinatario = it }, label = { Text("DESTINATÁRIO") }, modifier = Modifier.weight(1f))
+                Spacer(Modifier.width(12.dp))
+                OutlinedTextField(value = local, onValueChange = { local = it }, label = { Text("LOCALIZAÇÃO (PRATELEIRA)") }, modifier = Modifier.weight(1f))
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text("ENTREGUE AO MORADOR?", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                Switch(checked = entregue, onCheckedChange = { entregue = it })
+            }
+            Spacer(Modifier.height(32.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { navController.popBackStack() }, modifier = Modifier.weight(1f).height(56.dp), shape = RectangleShape) { Text("GRAVAR") }
+                Spacer(Modifier.width(12.dp))
+                OutlinedButton(onClick = { descricao = ""; destinatario = ""; local = ""; entregue = false }, modifier = Modifier.weight(1f).height(56.dp), shape = RectangleShape) { Text("LIMPAR") }
             }
         }
     }

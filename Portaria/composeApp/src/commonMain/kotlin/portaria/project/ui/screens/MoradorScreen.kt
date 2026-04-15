@@ -1,5 +1,6 @@
 package portaria.project.ui.screens
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,90 +11,111 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-// Classe visual temporária
-data class MoradorUI(val id: Int, val nome: String, val apto: String, val bloco: String)
+
+data class MoradorData(val id: String, val nome: String, val apto: String, val bloco: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoradorScreen(navController: NavController) {
-    var nome by remember { mutableStateOf("") }
-    var apto by remember { mutableStateOf("") }
-    var bloco by remember { mutableStateOf("") }
-    val moradores = remember { mutableStateListOf<MoradorUI>() }
+fun MoradorListScreen(navController: NavController) {
+    var busca by remember { mutableStateOf("") }
+    val lista = listOf(
+        MoradorData("1", "SAMER NASSIR HALAT", "101", "A"),
+        MoradorData("2", "ANA COSTA", "202", "B")
+    )
+    val filtrada = lista.filter { it.nome.contains(busca, ignoreCase = true) }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Gestão de Moradores", fontWeight = FontWeight.Bold) },
+                title = { Text("MORADORES", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) { // O 'popBackStack' agora funciona!
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("moradores_form") },
+                shape = RectangleShape
+            ) { Icon(Icons.Default.Add, null) }
+        }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding).padding(24.dp)) {
+            OutlinedTextField(
+                value = busca,
+                onValueChange = { busca = it },
+                placeholder = { Text("Pesquisar por nome...") },
+                leadingIcon = { Icon(Icons.Default.Search, null) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RectangleShape
+            )
+            Spacer(Modifier.height(16.dp))
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(filtrada) { m ->
+                    Box(modifier = Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outline).padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(m.nome, fontWeight = FontWeight.Black)
+                                Text("APTO: ${m.apto} | BLOCO: ${m.bloco}", fontSize = 12.sp, color = MaterialTheme.colorScheme.outline)
+                            }
+                            IconButton(onClick = { navController.navigate("moradores_form") }) { Icon(Icons.Default.EditNote, null) }
+                            IconButton(onClick = { }) { Icon(Icons.Default.DeleteOutline, null, tint = Color.Red) }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MoradorFormScreen(navController: NavController) {
+    var nome by remember { mutableStateOf("") }
+    var apto by remember { mutableStateOf("") }
+    var bloco by remember { mutableStateOf("") }
+    var ativo by remember { mutableStateOf(true) }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("REGISTRO DE MORADOR", fontSize = 14.sp, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
                 }
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize().padding(16.dp)) {
-
-            // FORMULÁRIO MODERNO (Requisito 'h')
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Novo Registro", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(value = nome, onValueChange = { nome = it }, label = { Text("Nome Completo") }, modifier = Modifier.fillMaxWidth())
-                    Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        OutlinedTextField(value = apto, onValueChange = { apto = it }, label = { Text("Apartamento") }, modifier = Modifier.weight(1f))
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedTextField(value = bloco, onValueChange = { bloco = it }, label = { Text("Bloco") }, modifier = Modifier.weight(1f))
-                    }
-
-                    Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-                        Button(onClick = {
-                            if(nome.isNotBlank()) moradores.add(MoradorUI(moradores.size + 1, nome, apto, bloco))
-                        }, modifier = Modifier.weight(1f)) {
-                            Icon(Icons.Default.Save, null)
-                            Text(" Gravar")
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        // BOTÃO LIMPAR (Exigência do PDF)
-                        OutlinedButton(onClick = { nome = ""; apto = ""; bloco = "" }, modifier = Modifier.weight(1f)) {
-                            Text("Limpar")
-                        }
-                    }
-                }
+        Column(modifier = Modifier.padding(padding).fillMaxSize().padding(24.dp)) {
+            OutlinedTextField(value = nome, onValueChange = { nome = it }, label = { Text("NOME COMPLETO") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(12.dp))
+            Row {
+                OutlinedTextField(value = apto, onValueChange = { apto = it }, label = { Text("APARTAMENTO") }, modifier = Modifier.weight(1f))
+                Spacer(Modifier.width(12.dp))
+                OutlinedTextField(value = bloco, onValueChange = { bloco = it }, label = { Text("BLOCO") }, modifier = Modifier.weight(1f))
             }
-
-            Spacer(Modifier.height(24.dp))
-            Text("Moradores Cadastrados", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-
-            // LISTAGEM EM CARDS (Requisitos 'i', 'j', 'k')
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-                items(moradores) { item ->
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                        ListItem(
-                            headlineContent = { Text(item.nome, fontWeight = FontWeight.Bold) },
-                            supportingContent = {
-                                // Mostrando 3 campos por card
-                                Text("Apto: ${item.apto} | Bloco: ${item.bloco} | ID: ${item.id}")
-                            },
-                            trailingContent = {
-                                Row {
-                                    IconButton(onClick = { /* Abre formulário para Editar */ }) {
-                                        Icon(Icons.Default.Edit, null, tint = MaterialTheme.colorScheme.primary)
-                                    }
-                                    IconButton(onClick = { moradores.remove(item) }) {
-                                        Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.error)
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
+            Spacer(Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text("ACESSO ATIVO", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                Switch(checked = ativo, onCheckedChange = { ativo = it })
+            }
+            Spacer(Modifier.height(32.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { navController.popBackStack() }, modifier = Modifier.weight(1f).height(56.dp), shape = RectangleShape) { Text("GRAVAR") }
+                Spacer(Modifier.width(12.dp))
+                OutlinedButton(onClick = { nome = ""; apto = ""; bloco = ""; ativo = true }, modifier = Modifier.weight(1f).height(56.dp), shape = RectangleShape) { Text("LIMPAR") }
             }
         }
     }

@@ -12,7 +12,6 @@ import portaria.project.ui.screens.*
 
 @Composable
 fun App() {
-    // Definindo uma paleta de cores "Premium Dark"
     val darkColorScheme = darkColorScheme(
         primary = Color.White,
         onPrimary = Color.Black,
@@ -21,26 +20,23 @@ fun App() {
         outline = Color(0xFF333333)
     )
 
-    // Removendo os cantos arredondados para um visual de "linhas retas"
-    val straightShapes = Shapes(
-        extraSmall = RoundedCornerShape(0.dp),
-        small = RoundedCornerShape(2.dp),
-        medium = RoundedCornerShape(4.dp),
-        large = RoundedCornerShape(0.dp),
-        extraLarge = RoundedCornerShape(0.dp)
-    )
-
-    MaterialTheme(colorScheme = darkColorScheme, shapes = straightShapes) {
+    MaterialTheme(colorScheme = darkColorScheme, shapes = Shapes(medium = RoundedCornerShape(0.dp))) {
         val navController = rememberNavController()
         Surface(color = MaterialTheme.colorScheme.background) {
             NavHost(navController = navController, startDestination = "login") {
                 composable("login") { LoginScreen(navController) }
                 composable("registro") { RegistroScreen(navController) }
                 composable("home") { HomeScreen(navController) }
-                composable("moradores") { MoradorScreen(navController) }
-                composable("visitantes") { VisitanteScreen(navController) }
-                composable("veiculos") { VeiculoScreen(navController) }
-                composable("encomendas") { EncomendaScreen(navController) }
+                composable("apartamentos_lista") { ApartamentoListScreen(navController) }
+                composable("apartamentos_form") { ApartamentoFormScreen(navController) }
+                composable("moradores_lista") { MoradorListScreen(navController) }
+                composable("moradores_form") { MoradorFormScreen(navController) }
+                composable("visitantes_lista") { VisitanteListScreen(navController) }
+                composable("visitantes_form") { VisitanteFormScreen(navController) }
+                composable("veiculos_lista") { VeiculoListScreen(navController) }
+                composable("veiculos_form") { VeiculoFormScreen(navController) }
+                composable("encomendas_lista") { EncomendaListScreen(navController) }
+                composable("encomendas_form") { EncomendaFormScreen(navController) }
             }
         }
     }

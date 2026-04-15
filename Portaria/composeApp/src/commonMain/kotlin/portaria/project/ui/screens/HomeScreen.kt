@@ -24,27 +24,35 @@ fun HomeScreen(navController: NavController) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("SECUREENTRY", fontSize = 16.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp) },
-                actions = {
-                    IconButton(onClick = { navController.navigate("login") }) {
-                        Icon(Icons.Default.Logout, null)
-                    }
-                }
+                actions = { IconButton(onClick = { navController.navigate("login") }) { Icon(Icons.Default.Logout, null) } }
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize().padding(24.dp)) {
-            Text("TERMINAL DE OPERAÇÕES", fontSize = 12.sp, color = MaterialTheme.colorScheme.outline)
-            Spacer(modifier = Modifier.height(24.dp))
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+        Box(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 800.dp) // Limita a largura máxima para não esticar ao infinito
+                    .padding(24.dp)
             ) {
-                item { MenuBox("MORADORES", Icons.Default.Home) { navController.navigate("moradores") } }
-                item { MenuBox("VISITANTES", Icons.Default.Badge) { navController.navigate("visitantes") } }
-                item { MenuBox("VEÍCULOS", Icons.Default.DirectionsCar) { navController.navigate("veiculos") } }
-                item { MenuBox("ENTREGAS", Icons.Default.Inventory) { navController.navigate("encomendas") } }
+                Text("TERMINAL DE OPERAÇÕES", fontSize = 12.sp, color = MaterialTheme.colorScheme.outline)
+                Spacer(modifier = Modifier.height(24.dp))
+
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 160.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+
+                    item { MenuBox("APARTAMENTOS", Icons.Default.Domain) { navController.navigate("apartamentos_lista") } }
+                    item { MenuBox("MORADORES", Icons.Default.Home) { navController.navigate("moradores_lista") } }
+                    item { MenuBox("VISITANTES", Icons.Default.Badge) { navController.navigate("visitantes_lista") } }
+                    item { MenuBox("VEÍCULOS", Icons.Default.DirectionsCar) { navController.navigate("veiculos_lista") } }
+                    item { MenuBox("ENTREGAS", Icons.Default.Inventory) { navController.navigate("encomendas_lista") } }
+                }
             }
         }
     }

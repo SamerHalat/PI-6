@@ -2,9 +2,7 @@ package portaria.project.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,31 +21,62 @@ fun RegistroScreen(navController: NavController) {
     var confirmarSenha by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Criar Conta", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(24.dp))
+        Icon(
+            imageVector = Icons.Default.Security,
+            contentDescription = "Escudo de Segurança",
+            modifier = Modifier.size(56.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(value = nome, onValueChange = { nome = it }, label = { Text("Nome Completo") },
-            leadingIcon = { Icon(Icons.Default.Person, null) }, modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("E-mail") },
-            leadingIcon = { Icon(Icons.Default.Email, null) }, modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedTextField(value = senha, onValueChange = { senha = it }, label = { Text("Senha") },
-            visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedTextField(value = confirmarSenha, onValueChange = { confirmarSenha = it }, label = { Text("Confirmar Senha") },
-            visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+        Text("SECURE", fontSize = 12.sp, letterSpacing = 4.sp, color = MaterialTheme.colorScheme.primary)
+        Text("REGISTRO", fontSize = 48.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { navController.navigate("login") }, modifier = Modifier.fillMaxWidth().height(50.dp)) {
-            Text("REGISTRAR")
+        OutlinedTextField(
+            value = nome, onValueChange = { nome = it },
+            label = { Text("NOME COMPLETO") },
+            modifier = Modifier.fillMaxWidth(), singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = email, onValueChange = { email = it },
+            label = { Text("E-MAIL") },
+            modifier = Modifier.fillMaxWidth(), singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = senha, onValueChange = { senha = it },
+            label = { Text("CRIAR SENHA") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(), singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = confirmarSenha, onValueChange = { confirmarSenha = it },
+            label = { Text("CONFIRMAR SENHA") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(), singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = { navController.navigate("login") },
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Text("CRIAR ACESSO", fontWeight = FontWeight.Bold)
         }
-        TextButton(onClick = { navController.navigate("login") }) {
-            Text("Já tem uma conta? Faça Login")
+        TextButton(
+            onClick = { navController.navigate("login") },
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)
+        ) {
+            Text("JÁ POSSUI ACESSO? FAÇA LOGIN", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

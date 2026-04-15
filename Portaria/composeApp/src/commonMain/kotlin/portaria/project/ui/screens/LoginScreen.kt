@@ -2,8 +2,7 @@ package portaria.project.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,16 +20,24 @@ fun LoginScreen(navController: NavController) {
 
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = Alignment.Start, // Alinhamento à esquerda é mais moderno
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center
     ) {
+        Icon(
+            imageVector = Icons.Default.Security,
+            contentDescription = "Escudo de Segurança",
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text("SECURE", fontSize = 12.sp, letterSpacing = 4.sp, color = MaterialTheme.colorScheme.primary)
         Text("ENTRY", fontSize = 48.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(48.dp))
 
         OutlinedTextField(
             value = email, onValueChange = { email = it },
-            label = { Text("E-MAIL CORPORATIVO") },
+            label = { Text("E-MAIL ") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
